@@ -1,0 +1,100 @@
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <!-- Jumbotron Header -->
+        <header class="jumbotron hero-spacer">
+            <% if user_signed_in? %>
+            
+                <!--이름-->
+                <p><%= current_user.name %>님 환영합니다.</p>
+                <!--이메일-->
+                <p>email-><%= current_user.email %> </p>
+                <!--나이-->
+                <% if current_user.age.present? %>
+                        <p>나이 : <%= current_user.age %></p>
+                <% else %>
+                    <p>나이 정보를 업데이트 해주세요!</p>
+                    <p><a href="/users/edit" class="btn btn-default">나이수정</a></p>
+                <% end %>
+                <!--키-->
+                <% if current_user.height.present? %>
+                        <p>키 : <%= current_user.height %></p>
+                <% else %>
+                    <p>키 정보를 업데이트 해주세요!</p>
+                    <p><a href="/users/edit" class="btn btn-default">키수정</a></p>
+                <% end %>
+                <!--몸무게-->
+                <% if current_user.weight.present? %>
+                        <p>몸무게 : <%= current_user.weight %></p>
+                <% else %>
+                    <p>몸무게 정보를 업데이트 해주세요!</p>
+                    <p><a href="/users/edit" class="btn btn-default">몸무게수정</a></p>
+                <% end %>
+            
+            
+                
+                <%
+                      @BMI_MATH = (current_user.weight/((current_user.height*0.01)*(current_user.height*0.01)))*10
+                      @BMI10 = @BMI_MATH.round
+                      @BMI = @BMI10*0.1
+                      
+                      if @BMI<18.5
+                          @BMI_KOR="저체중"
+                      elsif @BMI>=18.5 && @BMI<23
+                          @BMI_KOR="정상체중"
+                      elsif @BMI>23
+                          @BMI_KOR="과체중"
+                      elsif @BMI>23 && @BMI<25
+                          @BMI_KOR="위험체중"
+                      elsif @BMI>25 && @BMI<30    
+                          @BMI_KOR="비만 1단계"
+                      elsif @BMI>30 && @BMI<40    
+                          @BMI_KOR="비만 2단계"
+                      elsif @BMI>40  
+                          @BMI_KOR="비만 3단계"
+                      end
+                %>
+                
+                <p>BMI수치는 <%=@BMI%></p>
+                <p>현재 BMI(체질량지수)는 <%=@BMI_KOR%>상태 입니다</p>
+                
+                
+                
+            
+                <a href="/users/sign_out">로그아웃</a>
+                
+                <div class="container">
+                    <h2>내 다이어트 목록</h2>
+                        <% @zzim_list2.each do |c| %>
+                            <% if c.user_id == current_user.id %>
+                             <p><%= c.diet_title %><a href="/home/delete/<%=c.id%>">--삭제하기</a></p>
+                         
+                             <%end%>
+                        <%end%>
+            
+                </div>
+                
+         
+                <% else %>
+                <p>아직 로그인을 하지 않으셨네요. 로그인을 해주세요~<p>
+                <a href="/users/sign_in">로그인</a>
+            <% end %>
+            
+            <br>
+            
+            <p><%= link_to '글쓰러 가기', new_post_path%></p>
+            <p><a href="/">홈페이지</a></p>
+            
+        </header>
+
+        <hr>
+
+       
+
+    </div>
+    
+   
+    <!-- /.container -->
+    
+ 

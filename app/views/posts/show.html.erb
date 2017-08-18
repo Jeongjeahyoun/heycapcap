@@ -1,0 +1,79 @@
+<div class="container">
+  
+  <h2><%= @post.title %></h2>
+  <hr>
+  <p><strong>작성자 : <%= @post.user.name %></strong></p>
+  <hr>
+  <p><strong>작성시간 : <%=@post.created_at.in_time_zone("Asia/Seoul").strftime("%Y년%m월%d일 %H시%M분")%></strong></p>
+  <hr>
+  <p><strong>내용</strong></p>
+  <p><%= @post.content.html_safe%></p>
+  
+  <hr>
+  <% if can? :update, @post %>
+      <%= link_to 'Edit', edit_post_path(@post) %> |
+  <% end %>
+  <% if can? :delete, @post %>
+      <%= link_to 'Destroy', @post, method: :delete, data: { confirm: 'Are you sure?' } %> | 
+  <% end %>
+  <%= link_to '목록으로', posts_path %> 
+
+  
+  
+  
+  <hr>
+  <p><strong>댓글목록</strong></p>
+  <% @comments = @post.comments.all %>
+  <% @comments.each do |c| %>
+  <div class="well">
+  <p class="original-comment" id="<%=c.id %>">작성자 : <%= c.user.email %></p>
+  <p class="original-comment" id="<%=c.id %>">작성시간 : <%= c.created_at.in_time_zone("Asia/Seoul").strftime("%Y년%m월%d일 %H시%M분") %></p>
+  <p class="original-comment" id="<%=c.id %>">내용 : <%= c.comment %></p>
+  <div class="edit-comment-<%=c.id%>" style="display:none;">
+    <form action="/posts/<%=@post.id%>/comments/<%=c.id%>" method="post">
+      <div class="form-group">
+        <input type="hidden" value="<%=current_user.id%>" name="user_id"></input>
+        <input type="hidden" value="<%=@post.id%>" name="post_id"></input>
+        <textarea class="form-control" rows="5" name="comment"><%=c.comment %></textarea>
+      </div>
+      <button type="submit" class="btn btn-default">수정완료!</button>
+    </form>
+    </br>
+  </div>
+  <div class="edit-comment-<%=c.id%>-button-group">
+    <% if can? :update, c %>
+    <button class="btn btn-default edit-button" id="edit-comment-<%=c.id %>">수정</button>
+    <%end%>
+    
+    <% if can? :delete, c %>
+    <a href="/posts/<%=@post.id%>/comments/<%=c.id%>" data-method="delete" class="btn btn-default">삭제</a>
+    <%end%>
+  </div>
+  </div>
+  <% end %>
+
+  <p><strong>댓글작성</strong></p>
+  <div class="well">
+    <form action="/posts/<%=@post.id%>" method="post">
+      <div class="form-group">
+        <input type="hidden" value="<%=current_user.id%>" name="user_id"></input>
+        <input type="hidden" value="<%=@post.id%>" name="post_id"></input>
+        <textarea class="form-control" rows="5" name="comment"></textarea>
+      </div>
+      <button type="submit" class="btn btn-default">댓글작성!</button>
+    </form>
+  </div>
+  <hr>
+
+</div>
+
+
+
+<script>
+  $(".edit-button").click(function() {
+    var clickedID = this.id;
+    $("."+clickedID).css("display","block");
+    $("."+clickedID+"-button-group").css("display","none");
+  });
+  
+</script>
